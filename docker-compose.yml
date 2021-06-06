@@ -1,0 +1,61 @@
+version: '3.2'
+services:
+  rng:
+    build: rng
+    ports:
+    - "8001:8001"
+
+  hasher:
+    build: hasher
+    ports:
+    - "8002:8002"
+
+  webui:
+    build: webui
+    ports:
+    - "8000:80"
+    volumes:
+    - "vol1:/files/"
+
+  worker:
+    build: worker
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+    - 9090:9090
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+    - cadvisor
+
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:latest
+    container_name: cadvisor
+    ports:
+    - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    depends_on:
+    - redis
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+    - 6379:6379
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+    - 3000:3000
+
+volumes:
+  vol1:
