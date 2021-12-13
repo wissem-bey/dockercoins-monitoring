@@ -1,23 +1,27 @@
 version: '3.2'
 services:
   rng:
+    image: rng:3.0
     build: rng
     ports:
     - "8001:8001"
 
   hasher:
+    image: hasher:3.0
     build: hasher
     ports:
     - "8002:8002"
 
   webui:
-    build: webui
+    image: brahimhamdi/webui:2.0
+    #build: webui
     ports:
     - "8000:80"
     volumes:
     - "vol1:/files/"
 
   worker:
+    image: worker:3.0
     build: worker
 
   prometheus:
